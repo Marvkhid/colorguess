@@ -26,6 +26,13 @@ const Game = () => {
     generateNewGame();
   }, []);
 
+  useEffect(() => {
+    if (score > highScore) {
+      setHighScore(score);
+      localStorage.setItem("highScore", score);
+    }
+  }, [score, highScore]); 
+
   const generateNewGame = (resetScore = false) => {
     const randomCategory = targetColors[Math.floor(Math.random() * targetColors.length)];
     const randomColor = colorGroups[randomCategory][Math.floor(Math.random() * 6)];
@@ -50,7 +57,7 @@ const Game = () => {
   };
 
   const handleGuess = (color) => {
-    if (showGameOver) return; // Prevent guess handling if game over pop-up is visible
+    if (showGameOver) return; 
 
     if (color === targetColor) {
       setScore((prevScore) => prevScore + 5);
@@ -60,7 +67,7 @@ const Game = () => {
       setScore((prevScore) => {
         const newScore = Math.max(prevScore - 2, 0);
         if (newScore === 0) {
-          setShowGameOver(true); // Show game over pop-up when score hits 0
+          setShowGameOver(true); 
         }
         return newScore;
       });
@@ -68,7 +75,7 @@ const Game = () => {
       setStatusClass("wrong");
     }
 
-    // Delay next round only if no pop-up is active
+
     if (!showGameOver) {
       setTimeout(() => generateNewGame(false), 1000);
     }
@@ -88,7 +95,7 @@ const Game = () => {
             <p>Your score dropped to zero!</p>
             <button
               onClick={() => {
-                generateNewGame(true); // Reset the game on game over
+                generateNewGame(true);
                 setShowGameOver(false);
               }}
               className="continue-button"
