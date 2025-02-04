@@ -31,7 +31,7 @@ const Game = () => {
       setHighScore(score);
       localStorage.setItem("highScore", score);
     }
-  }, [score, highScore]); 
+  }, [score, highScore]);
 
   const generateNewGame = (resetScore = false) => {
     const randomCategory = targetColors[Math.floor(Math.random() * targetColors.length)];
@@ -57,7 +57,7 @@ const Game = () => {
   };
 
   const handleGuess = (color) => {
-    if (showGameOver) return; 
+    if (showGameOver) return;
 
     if (color === targetColor) {
       setScore((prevScore) => prevScore + 5);
@@ -67,14 +67,13 @@ const Game = () => {
       setScore((prevScore) => {
         const newScore = Math.max(prevScore - 2, 0);
         if (newScore === 0) {
-          setShowGameOver(true); 
+          setShowGameOver(true);
         }
         return newScore;
       });
       setGameStatus("❌ Wrong! Try Again.");
       setStatusClass("wrong");
     }
-
 
     if (!showGameOver) {
       setTimeout(() => generateNewGame(false), 1000);
@@ -94,6 +93,7 @@ const Game = () => {
             <h2>💀 GAME OVER</h2>
             <p>Your score dropped to zero!</p>
             <button
+              data-testid="newGameButton"
               onClick={() => {
                 generateNewGame(true);
                 setShowGameOver(false);
@@ -107,15 +107,19 @@ const Game = () => {
       )}
 
       <div className="score-container">
-        <div className="high-score">High Score: {highScore}</div>
-        <div className="current-score">Score: {score}</div>
+        <div className="high-score" data-testid="highScore">High Score: {highScore}</div>
+        <div className="current-score" data-testid="score">Score: {score}</div>
       </div>
 
       <h1 className="game-title">Color Guessing Game</h1>
       <p className="game-description">Try to guess the correct color!</p>
 
-      <div className="color-box" style={{ backgroundColor: targetColor }}></div>
-      <div className="game-instructions">{message}</div>
+      <div 
+        className="color-box" 
+        style={{ backgroundColor: targetColor }} 
+        data-testid="colorBox"
+      ></div>
+      <div className="game-instructions" data-testid="gameInstructions">{message}</div>
 
       <div className="color-options">
         {colorOptions.map((color, index) => (
@@ -124,17 +128,25 @@ const Game = () => {
             className="color-option"
             style={{ backgroundColor: color }}
             onClick={() => handleGuess(color)}
+            data-testid="colorOption"
           ></button>
         ))}
       </div>
 
-      <div className={`game-status ${statusClass}`}>{gameStatus}</div>
+      <div className={`game-status ${statusClass}`} data-testid="gameStatus">{gameStatus}</div>
 
-      <button className="new-game-button" onClick={() => generateNewGame(true)}>
+      <button
+        className="new-game-button"
+        data-testid="newGameButton"
+        onClick={() => generateNewGame(true)}
+      >
         New Game
       </button>
 
-      <button className="reset-high-score-button" onClick={resetHighScore}>
+      <button 
+        className="reset-high-score-button"
+        onClick={resetHighScore}
+      >
         Reset High Score
       </button>
     </div>
