@@ -20,9 +20,7 @@ const Game = () => {
   const [message, setMessage] = useState("Click the color that matches the target!");
   const [gameStatus, setGameStatus] = useState("");
   const [statusClass, setStatusClass] = useState("");
-  const [showOverlay, setShowOverlay] = useState(false);
   const [showGameOver, setShowGameOver] = useState(false);
-  const [hasBeatenHighScore, setHasBeatenHighScore] = useState(false); // New state for tracking high score status
 
   useEffect(() => {
     generateNewGame();
@@ -41,7 +39,6 @@ const Game = () => {
     if (resetScore) {
       setScore(0);
       setShowGameOver(false);
-      setHasBeatenHighScore(false); // Reset high score status when a new game starts
     }
   };
 
@@ -53,63 +50,49 @@ const Game = () => {
   };
 
   const handleGuess = (color) => {
-    // Prevent interactions if a pop-up is active
-    if (showOverlay || showGameOver) return;
+    if (showGameOver) return; // Prevent guess handling if game over pop-up is visible
 
     if (color === targetColor) {
-      setScore((prevScore) => {
-        const newScore = prevScore + 5;
-        if (newScore > highScore) {
-          setHighScore(newScore);
-          localStorage.setItem("highScore", newScore);
-          setHasBeatenHighScore(true); // Set that high score has been beaten
-          setShowOverlay(true); // Show the high score pop-up
-        }
-        return newScore;
-      });
+      setScore((prevScore) => prevScore + 5);
       setGameStatus("✅ Correct! Keep Going!");
       setStatusClass("correct");
     } else {
       setScore((prevScore) => {
         const newScore = Math.max(prevScore - 2, 0);
         if (newScore === 0) {
-          setShowGameOver(true); // Show the game over pop-up
+          setShowGameOver(true); // Show game over pop-up when score hits 0
         }
         return newScore;
       });
       setGameStatus("❌ Wrong! Try Again.");
       setStatusClass("wrong");
-
-      // Reset the high score celebration if the player gets a wrong answer
-      setHasBeatenHighScore(false);
     }
 
     // Delay next round only if no pop-up is active
-    if (!showOverlay && !showGameOver) {
+    if (!showGameOver) {
       setTimeout(() => generateNewGame(false), 1000);
     }
   };
 
+  const resetHighScore = () => {
+    setHighScore(0);
+    localStorage.setItem("highScore", 0);
+  };
+
   return (
     <div className="game-container">
-      {showOverlay && hasBeatenHighScore && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <h2>🎉 GREAT! YOU JUST BEAT THE HIGH SCORE!</h2>
-            <p>NOW GO FOR MORE!</p>
-            <button onClick={() => setShowOverlay(false)} className="continue-button">
-              Continue Game
-            </button>
-          </div>
-        </div>
-      )}
-
       {showGameOver && (
         <div className="overlay">
           <div className="overlay-content">
             <h2>💀 GAME OVER</h2>
             <p>Your score dropped to zero!</p>
-            <button onClick={() => generateNewGame(true)} className="continue-button">
+            <button
+              onClick={() => {
+                generateNewGame(true); // Reset the game on game over
+                setShowGameOver(false);
+              }}
+              className="continue-button"
+            >
               New Game
             </button>
           </div>
@@ -142,6 +125,10 @@ const Game = () => {
 
       <button className="new-game-button" onClick={() => generateNewGame(true)}>
         New Game
+      </button>
+
+      <button className="reset-high-score-button" onClick={resetHighScore}>
+        Reset High Score
       </button>
     </div>
   );

@@ -97,6 +97,21 @@ body {
 .wrong {
     color: #f44336;
 }
+.reset-high-score-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.reset-high-score-button:hover {
+  background-color: #d32f2f;
+}
+
 
 .new-game-button {
     padding: 12px 20px;
